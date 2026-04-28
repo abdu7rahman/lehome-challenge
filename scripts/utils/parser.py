@@ -477,6 +477,29 @@ def setup_eval_parser() -> argparse.ArgumentParser:
         help="URDF path for IK solver (required when --use_ee_pose is set).",
     )
 
+    # Ensemble policy arguments
+    parser.add_argument(
+        "--classifier_path",
+        type=str,
+        help="Path to the trained garment classifier checkpoint (used by ensemble).",
+    )
+    parser.add_argument(
+        "--generalist_path",
+        type=str,
+        help="Path to the generalist policy checkpoint (used by ensemble).",
+    )
+    parser.add_argument(
+        "--specialist_paths",
+        type=str,
+        help="JSON string or comma-separated list 'class=path,class2=path' for specialist policies.",
+    )
+    parser.add_argument(
+        "--confidence_threshold",
+        type=float,
+        default=0.85,
+        help="Confidence threshold for switching to a specialist policy.",
+    )
+
     # Docker policy arguments
     parser.add_argument(
         "--docker_url",

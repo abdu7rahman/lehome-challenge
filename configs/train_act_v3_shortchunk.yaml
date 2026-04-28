@@ -1,0 +1,43 @@
+dataset:
+  repo_id: repo_act_all
+  root: Datasets/example/all_garments_merged
+
+policy:
+  type: act
+  device: cuda
+  push_to_hub: false
+
+  chunk_size: 50
+  n_action_steps: 50
+  optimizer_lr: 5e-5
+  optimizer_lr_backbone: 5e-5
+  optimizer_weight_decay: 1e-4
+  kl_weight: 10.0
+
+  input_features:
+    observation.state:
+      type: STATE
+      shape: [12]
+    observation.images.top_rgb:
+      type: VISUAL
+      shape: [3, 480, 640]
+    observation.images.left_rgb:
+      type: VISUAL
+      shape: [3, 480, 640]
+    observation.images.right_rgb:
+      type: VISUAL
+      shape: [3, 480, 640]
+
+  output_features:
+    action:
+      type: ACTION
+      shape: [12]
+
+output_dir: outputs/train/act_v3_shortchunk
+batch_size: 16
+steps: 100000
+save_freq: 10000
+log_freq: 1000
+
+wandb:
+  enable: false

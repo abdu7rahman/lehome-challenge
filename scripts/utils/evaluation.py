@@ -292,6 +292,30 @@ def eval(args: argparse.Namespace, simulation_app: Any) -> None:
     elif args.policy_type == "docker":
         # Docker policy connects to an external container
         policy_kwargs["docker_url"] = args.docker_url
+    elif args.policy_type == "ensemble":
+        if not args.classifier_path or not args.generalist_path or not args.dataset_root:
+            raise ValueError("classifier_path, generalist_path, and dataset_root are required for ensemble policy")
+            
+        specialist_paths = {}
+        if args.specialist_paths:
+            import json
+            try:
+                # Try parsing as JSON first
+                specialist_paths = json.loads(args.specialist_paths)
+            except json.JSONDecodeError:
+                # Fallback to key=value,key=value format
+                for pair in args.specialist_paths.split(','):
+                    k, v = pair.split('=')
+                    specialist_paths[k.strip()] = v.strip()
+                    
+        policy_kwargs.update({
+            "classifier_path": args.classifier_path,
+            "generalist_path": args.generalist_path,
+            "dataset_root": args.dataset_root,
+            "task_description": args.task_description,
+            "specialist_paths": specialist_paths,
+            "confidence_threshold": args.confidence_threshold
+        })
     else:
         # For custom policies, pass policy_path as model_path if provided
         if args.policy_path:
