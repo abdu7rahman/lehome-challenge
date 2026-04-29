@@ -40,7 +40,22 @@ def train(args):
         "pant_long": 2,
         "pant_short": 3,
     }
-    
+    #===============================================================
+    #David Added: Updated class map to match garment name prefixes
+    def garment_name_to_class(garment_name):
+        name = garment_name.lower()
+
+        if name.startswith("top_long"):
+            return "top_long"
+        if name.startswith("top_short"):
+            return "top_short"
+        if name.startswith("pant_long"):
+            return "pant_long"
+        if name.startswith("pant_short"):
+            return "pant_short"
+
+        return None
+    #===============================================================
     # Load garment info from dataset meta to get labels per episode
     meta_path = Path(args.dataset_root) / "meta" / "garment_info.json"
     if not meta_path.exists():
@@ -52,11 +67,17 @@ def train(args):
     # Build episode to class_idx mapping
     episode_to_class = {}
     for garment_name, episodes in garment_info.items():
-        if garment_name not in class_map:
+        
+        # David Added:
+        garment_class = garment_name_to_class(garment_name)
+        
+        # if garment_name not in class_map:
+        if garment_class is None: #David
             print(f"Warning: Unknown garment class {garment_name}")
             continue
         for ep_id in episodes.keys():
-            episode_to_class[int(ep_id)] = class_map[garment_name]
+            # episode_to_class[int(ep_id)] = class_map[garment_name]
+            episode_to_class[int(ep_id)] = class_map[garment_class]
             
     # We don't need the whole sequence for a classifier, just random frames
     # Create a custom dataset that grabs frames and their labels
